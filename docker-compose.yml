@@ -1,0 +1,61 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: member-mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: authdb
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - authnet
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/authdb --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: member-backend
+    restart: unless-stopped
+    environment:
+      MONGO_URI: mongodb://mongodb:27017
+      DB_NAME: authdb
+      JWT_SECRET: "your-super-secret-jwt-key-change-in-production"
+      PORT: "3000"
+      GIN_MODE: release
+    ports:
+      - "3000:3000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - authnet
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: member-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:5173"
+    depends_on:
+      - backend
+    networks:
+      - authnet
+
+volumes:
+  mongo_data:
+
+networks:
+  authnet:
+    driver: bridge
