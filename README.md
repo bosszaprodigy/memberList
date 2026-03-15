@@ -116,7 +116,7 @@ GET /api/members?page=1&limit=10
 
 ---
 
-### POST /api/v1/members
+### POST /api/members
 
 Create a new member.
 
