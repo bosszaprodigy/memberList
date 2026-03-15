@@ -92,8 +92,6 @@ GET /api/members?page=1&limit=10
 **Example Response:**
 ```json
 {
-  "success": true,
-  "message": "Members retrieved successfully",
   "data": {
     "data": [
       {
@@ -133,8 +131,6 @@ Create a new member.
 **Example Response:**
 ```json
 {
-  "success": true,
-  "message": "Member created successfully",
   "data": {
     "id": "65a1b2c3d4e5f6789012346",
     "name": "Jane",
