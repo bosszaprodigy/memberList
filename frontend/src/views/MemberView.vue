@@ -83,7 +83,6 @@ const headers = reactive([
 ])
 
 
-
 const onSelected = (item) => {
   typeModel.value = 'view'
   dataMember.value = item
@@ -107,9 +106,13 @@ function formatDateToDDMMYYYY(date) {
   return `${day}/${month}/${year}`;
 }
 
-const fetchMembers = async () => {
+const fetchMembers = async ({ page = 1, itemsPerPage = 10 } = {}) => {
+  const sendData = {
+    page: page || 1, // หน้าปัจจุบัน
+    limit: itemsPerPage || 10, // จํานวนข้อมูลต่อหน้า
+  }
   try {
-    const res = await apiMember.getAll()
+    const res = await apiMember.getAll(sendData)
 
     if (!res?.success) {
       throw new Error(res?.message || 'Fetch members failed')
@@ -118,7 +121,7 @@ const fetchMembers = async () => {
     const payload = res?.response
 
     items.value = (payload.data || []).map((item, index) => ({
-      id: index + 1,
+      id: (page - 1) * itemsPerPage + index + 1,
       ...item
     }))
 

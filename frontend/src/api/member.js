@@ -2,8 +2,13 @@ import axios from 'axios'
 
 const API_BASE = 'http://localhost:3000/api'
 
-async function getAll() {
-  const res = await axios.get(`${API_BASE}/members`)
+async function getAll({ page, limit }) {
+  const params = new URLSearchParams();
+
+  if (page) params.append('page', page);
+  if (limit) params.append('limit', limit);
+
+  const res = await axios.get(`${API_BASE}/members?${params.toString()}`)
   return { success: true, response: res.data.data }
 }
 
